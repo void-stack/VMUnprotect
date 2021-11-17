@@ -27,7 +27,6 @@ namespace VMUnprotect
             ConsoleLogger.Warn("MethodType: {0}", methodBase.GetType());
             if (obj != null) ConsoleLogger.Warn("obj: {0}", obj.GetType());
 
-
             // Loop through parameters and log them
             for (var i = 0; i < parameters.Length; i++)
             {
