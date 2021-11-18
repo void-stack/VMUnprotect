@@ -62,14 +62,9 @@ namespace VMUnprotect.Hooks.Methods
                 // Indicate this method was called by newer version of VMP.
                 ConsoleLogger.Warn("============================================= HookedInvoke =============================================\n");
 
-                // Invoke the method and get return value.
-                var returnValue = methodBase.Invoke(obj, bindingFlags, binder, parameters, culture);
-
                 // Route the arguments and return value to our middleman function where they can be manipulated or logged.
-                MiddleMan.VmpMethodLogger(obj, bindingFlags, binder, ref parameters, culture, methodBase, ref returnValue);
-
-                // Return logged return value.
-                return returnValue;
+                return MiddleMan.VmpMethodLogger(obj, null, null, ref parameters, null, methodBase);
+                ;
             }
             catch (Exception ex)
             {
@@ -109,14 +104,9 @@ namespace VMUnprotect.Hooks.Methods
                 // Indicate this method was called by older version of VMP.
                 ConsoleLogger.Warn("============================================= HookedInvokeOld =============================================\n");
 
-                // Invoke the method and get return value.
-                var returnValue = methodBase.Invoke(obj, parameters);
-
                 // Route the arguments and return value to our middleman function where they can be manipulated or logged.
-                MiddleMan.VmpMethodLogger(obj, null, null, ref parameters, null, methodBase, ref returnValue);
-
-                // Return logged return value.
-                return returnValue;
+                return MiddleMan.VmpMethodLogger(obj, null, null, ref parameters, null, methodBase);
+                ;
             }
             catch (Exception ex)
             {

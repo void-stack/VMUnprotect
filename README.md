@@ -2,7 +2,7 @@
   <img width="256" heigth="256" src="VMUP/media/vmup.png">
 <h1 align="center">VMUnprotect.NET</h1>
 <p align="center">
-  <strong>VMUnprotect</strong> is a project engaged in hunting virtualized <a href="https://vmpsoft.com">VMProtect</a> methods. It makes use of <a href="https://github.com/pardeike/Harmony">Harmony</a> to dynamically read <strong>VMP</strong> behavior. Currently only supports method administration. Currently supports   <a href="https://vmpsoft.com/20210919/vmprotect-3-5-1/">VMProtect 3.5.1</a> (Lasted) and few versions back.
+  <strong>VMUnprotect</strong> is a project engaged in hunting virtualized <a href="https://vmpsoft.com">VMProtect</a> methods. It makes use of <a href="https://github.com/pardeike/Harmony">Harmony</a> to dynamically read <strong>VMP</strong> behavior. Currently only supports method administration. Works on <a href="https://vmpsoft.com/20210919/vmprotect-3-5-1/">VMProtect 3.5.1</a> (Latest) and few versions back.
 </p>
 </p>
 <p align="center">
@@ -14,7 +14,7 @@
 ## Showcase
 <img src="VMUP/media/gif.gif">
 
-## Usage
+# Usage
 ```sh
 VMUnprotect.exe <path to assembly> [args to assembly]
 ```
@@ -32,7 +32,7 @@ Virtualization Tools | Yes
 Strip Debug Information | Yes 
 Pack the Output File | No
 
-## Usage can be found in ```MiddleMan.cs```
+# Usage can be found in ```MiddleMan.cs```
 ```csharp
 namespace VMUnprotect
 {
@@ -44,15 +44,21 @@ namespace VMUnprotect
         /// <summary>
         ///     This function manipulate can manipulate, log actual invokes from virtualized VMP functions.
         /// </summary>
-        public static void VmpMethodLogger(
-            object obj,
-            BindingFlags? bindingFlags,
-            Binder binder,
-            ref object[] parameters,
-            CultureInfo culture,
-            MethodBase methodBase,
-            ref object returnValue)
+        public static object VmpMethodLogger(object obj, BindingFlags? bindingFlags, Binder binder, ref object[] parameters, CultureInfo culture, MethodBase methodBase)
         {
+            // Invoke the method and get return value.
+            var returnValue = methodBase.Invoke(obj, parameters);
+
+            // TODO: Add option to disable this because can cause bugs and can be broken easily
+            var trace = new StackTrace();
+            var frame = trace.GetFrame(5); // <--
+            var method = frame.GetMethod();
+
+            if (method.IsConstructor)
+                ConsoleLogger.Warn($"VMP Method (Constructor) {method.FullDescription()}");
+
+            ConsoleLogger.Warn($"VMP Method: {method.FullDescription()}");
+
             ConsoleLogger.Warn("MethodName: {0}", methodBase.Name);
             ConsoleLogger.Warn("FullDescription: {0}", methodBase.FullDescription());
             ConsoleLogger.Warn("MethodType: {0}", methodBase.GetType());
@@ -70,6 +76,8 @@ namespace VMUnprotect
 
             if (returnValue != null)
                 ConsoleLogger.Warn("Return type: {0}\n", returnValue.GetType());
+
+            return returnValue;
         }
     }
 }
@@ -86,7 +94,8 @@ As VMProtect describes it on their's website. Code virtualization is the next st
 ### Can it devirtualize VMP?
 No, isn't even meant for devirtualization.
 
-## Credits
+# Credits
 This tool uses the following (open source) software:
 * [dnlib](https://github.com/0xd4d/dnlib) by [0xd4d](https://github.com/0xd4d), licensed under the MIT license, for reading/writing assemblies.
 * [Harmony](https://github.com/pardeike/Harmony) by [Andreas Pardeike](https://github.com/pardeike), licensed under the MIT license, for patching the stacktrace which allows for reflection invocation to be used.
+* [Serilog](https://github.com/serilog/serilog) provides diagnostic logging to files, the console, and elsewhere. It is easy to set up, has a clean API.
