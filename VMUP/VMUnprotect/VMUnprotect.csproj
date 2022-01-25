@@ -33,9 +33,16 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
+    <PropertyGroup>
+        <ApplicationManifest>manifest.manifest</ApplicationManifest>
+    </PropertyGroup>
     <ItemGroup>
         <Reference Include="0Harmony, Version=2.1.1.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>..\packages\Lib.Harmony.2.1.1\lib\net472\0Harmony.dll</HintPath>
+            <Private>True</Private>
+        </Reference>
+        <Reference Include="CommandLine, Version=2.9.0.0, Culture=neutral, PublicKeyToken=5a870481e358d379">
+            <HintPath>..\packages\CommandLineParser.2.9.0-preview1\lib\net461\CommandLine.dll</HintPath>
             <Private>True</Private>
         </Reference>
         <Reference Include="dnlib, Version=3.3.5.0, Culture=neutral, PublicKeyToken=50e96378b6e77999">
@@ -62,29 +69,32 @@
         <Reference Include="System.Xml"/>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="CommandLineOptions.cs"/>
         <Compile Include="Hooks\HooksManager.cs"/>
         <Compile Include="Hooks\Methods\GetCallingAssemblyPatch.cs"/>
         <Compile Include="Hooks\Methods\GetEntryAssemblyPatch.cs"/>
-        <Compile Include="Hooks\Methods\VMProtectDumper.cs"/>
+        <Compile Include="Hooks\Methods\VmProtectDumperTranspiler.cs"/>
+        <Compile Include="Hooks\Methods\VmProtectDumperUnsafeInvoke.cs"/>
         <Compile Include="Init\Loader.cs"/>
         <Compile Include="Init\VMAnalyzer.cs"/>
         <Compile Include="Init\VMRuntimeStructure.cs"/>
-        <Compile Include="MiddleMan.cs"/>
+        <Compile Include="Methods\MiddleMan.cs"/>
+        <Compile Include="Methods\TranspilerMiddleMan.cs"/>
         <Compile Include="Program.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="Utils\ConsoleLogger.cs"/>
         <Compile Include="Utils\StringCounts.cs"/>
     </ItemGroup>
     <ItemGroup>
+        <None Include="manifest.manifest"/>
         <None Include="packages.config"/>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-         Other similar extension points exist, see Microsoft.Common.targets.
-    <Target Name="BeforeBuild">
-    </Target>
-    <Target Name="AfterBuild">
-    </Target>
-    -->
-
+           Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+      -->
 </Project>

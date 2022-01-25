@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using VMUnprotect.Methods;
 using VMUnprotect.Utils;
 
 namespace VMUnprotect.Hooks.Methods
@@ -63,8 +64,7 @@ namespace VMUnprotect.Hooks.Methods
                 ConsoleLogger.Warn("============================================= HookedInvoke =============================================\n");
 
                 // Route the arguments and return value to our middleman function where they can be manipulated or logged.
-                return MiddleMan.VmpMethodLogger(obj, null, null, ref parameters, null, methodBase);
-                ;
+                return TranspilerMiddleMan.VmpMethodLogger(obj, null, null, ref parameters, null, methodBase);
             }
             catch (Exception ex)
             {
@@ -105,8 +105,7 @@ namespace VMUnprotect.Hooks.Methods
                 ConsoleLogger.Warn("============================================= HookedInvokeOld =============================================\n");
 
                 // Route the arguments and return value to our middleman function where they can be manipulated or logged.
-                return MiddleMan.VmpMethodLogger(obj, null, null, ref parameters, null, methodBase);
-                ;
+                return TranspilerMiddleMan.VmpMethodLogger(obj, null, null, ref parameters, null, methodBase);
             }
             catch (Exception ex)
             {
@@ -120,7 +119,7 @@ namespace VMUnprotect.Hooks.Methods
     /// <summary>
     ///     This class contains Harmony Patches
     /// </summary>
-    public static class VmProtectDumper
+    public static class VmProtectDumperTranspiler
     {
         /// <summary>A transpiler that replaces all occurrences of a given method with another with additional Ldarg_1 instruction</summary>
         /// <param name="instructions">The enumeration of <see cref="T:HarmonyLib.CodeInstruction" /> to act on</param>

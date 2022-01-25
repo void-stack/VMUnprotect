@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System.Reflection;
+using VMUnprotect.Init;
 using VMUnprotect.Utils;
 
 namespace VMUnprotect.Hooks.Methods
@@ -8,7 +9,7 @@ namespace VMUnprotect.Hooks.Methods
     ///     Harmony Patch for GetCallingAssembly
     /// </summary>
     [HarmonyPatch(typeof(Assembly))]
-    [HarmonyPatch("GetCallingAssembly")]
+    [HarmonyPatch(nameof(Assembly.GetCallingAssembly))]
     public class GetCallingAssemblyPatch
     {
         public static void Postfix(ref Assembly __result)

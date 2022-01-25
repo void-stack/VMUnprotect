@@ -1,6 +1,7 @@
 ﻿using dnlib.DotNet;
 using System;
 using System.Linq;
+using VMUnprotect.Init;
 using VMUnprotect.Utils;
 
 namespace VMUnprotect

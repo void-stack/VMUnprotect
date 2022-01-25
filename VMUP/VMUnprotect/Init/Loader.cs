@@ -1,14 +1,12 @@
 ﻿using dnlib.DotNet;
 using HarmonyLib;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using VMUnprotect.Hooks;
 using VMUnprotect.Utils;
 
-namespace VMUnprotect
+namespace VMUnprotect.Init
 {
     public class Loader
     {
@@ -35,27 +33,34 @@ namespace VMUnprotect
             set;
         }
 
-        public void Start(IEnumerable<string> args)
+        public static CommandLineOptions Options
+        {
+            get;
+            set;
+        }
+
+
+        public void Start(CommandLineOptions args)
         {
             var fileEntryPoint = VmpAssembly.EntryPoint;
             var moduleHandle = VmpAssembly.ManifestModule.ModuleHandle;
             var parameters = fileEntryPoint.GetParameters();
-            var arguments = args.Skip(1).ToArray();
+
 
             ConsoleLogger.Debug("Entrypoint method: {0}", fileEntryPoint.FullDescription());
             ConsoleLogger.Debug("ModuleHandle: {0}", moduleHandle);
 
-            ConsoleLogger.Debug("Analyzing VMP Structure...");
+            ConsoleLogger.Debug("--- Analyzing VMP Structure...");
             VmAnalyzer.Run(this);
 
-            ConsoleLogger.Info("Applying hooks.");
-            HooksManager.HooksApply(RuntimeStructure);
+            ConsoleLogger.Info("--- Applying hooks.");
+            HooksManager.HooksApply(RuntimeStructure, args);
 
-            ConsoleLogger.Info("Invoking Constructor.");
+            ConsoleLogger.Info("--- Invoking Constructor.");
             RuntimeHelpers.RunModuleConstructor(moduleHandle);
 
-            ConsoleLogger.Info("Invoking assembly.");
-            fileEntryPoint.Invoke(null, parameters.Length == 0 ? null : new object[] {arguments});
+            ConsoleLogger.Info("--- Invoking assembly.\n");
+            fileEntryPoint.Invoke(null, parameters.Length == 0 ? null : new object[] {null});
         }
 
         private static Assembly TryLoadAssembly(string path)

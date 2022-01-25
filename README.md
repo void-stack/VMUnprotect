@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="256" heigth="256" src="VMUP/media/vmup.png">
+  <img width="256" heigth="256" src="Images/vmup.png">
 <h1 align="center">VMUnprotect.NET</h1>
 <p align="center">
   <strong>VMUnprotect</strong> is a project engaged in hunting virtualized <a href="https://vmpsoft.com">VMProtect</a> methods. It makes use of <a href="https://github.com/pardeike/Harmony">Harmony</a> to dynamically read <strong>VMP</strong> behavior. Currently only supports method administration. Works on <a href="https://vmpsoft.com/20210919/vmprotect-3-5-1/">VMProtect 3.5.1</a> (Latest) and few versions back.
@@ -12,11 +12,15 @@
 </p>
 
 ## Showcase
-<img src="VMUP/media/gif.gif">
+<img src="Images/showcase.gif">
 
 # Usage
 ```sh
-VMUnprotect.exe <path to assembly> [args to assembly]
+VMUnprotect.exe 
+  -f, --file         Required. Path to file.
+  --usetranspiler    (Default: false) Use an older method that makes use of Transpiler (not recommended).
+  --help             Display this help screen.
+  --version          Display version information.
 ```
 
 # Supported Protections
@@ -32,60 +36,50 @@ Virtualization Tools | Yes
 Strip Debug Information | Yes 
 Pack the Output File | No
 
-# Usage can be found in ```MiddleMan.cs```
+# Usage can be found in ```Methods\MiddleMan.cs```
 ```csharp
-namespace VMUnprotect
-{
-    /// <summary>
-    ///     Works as Middle Man to make life easier
-    /// </summary>
-    internal static class MiddleMan
+ internal static class MiddleMan
     {
-        /// <summary>
-        ///     This function manipulate can manipulate, log actual invokes from virtualized VMP functions.
-        /// </summary>
-        public static object VmpMethodLogger(object obj, BindingFlags? bindingFlags, Binder binder, ref object[] parameters, CultureInfo culture, MethodBase methodBase)
+        public static void Prefix(ref object __instance, ref object obj, ref object[] parameters, ref object[] arguments)
         {
-            // Invoke the method and get return value.
-            var returnValue = methodBase.Invoke(obj, parameters);
+            var virtualizedMethodName = new StackTrace().GetFrame(7).GetMethod();
+            var method = (MethodBase) __instance;
 
-            // TODO: Add option to disable this because can cause bugs and can be broken easily
-            var trace = new StackTrace();
-            var frame = trace.GetFrame(5); // <--
-            var method = frame.GetMethod();
-
-            if (method.IsConstructor)
-                ConsoleLogger.Warn($"VMP Method (Constructor) {method.FullDescription()}");
-
-            ConsoleLogger.Warn($"VMP Method: {method.FullDescription()}");
-
-            ConsoleLogger.Warn("MethodName: {0}", methodBase.Name);
-            ConsoleLogger.Warn("FullDescription: {0}", methodBase.FullDescription());
-            ConsoleLogger.Warn("MethodType: {0}", methodBase.GetType());
-            if (obj != null) ConsoleLogger.Warn("obj: {0}", obj.GetType());
+            ConsoleLogger.Warn("\tVMP MethodName: {0} (MDToken {1:X4})", virtualizedMethodName.FullDescription(), virtualizedMethodName.MetadataToken.ToString());
+            ConsoleLogger.Warn("\tMethodName: {0}", method.Name);
+            ConsoleLogger.Warn("\tFullDescription: {0}", method.FullDescription());
+            ConsoleLogger.Warn("\tMethodType: {0}", method.GetType());
+            if (obj != null) ConsoleLogger.Warn("\nObj: {0}", obj.GetType());
 
             // Loop through parameters and log them
             for (var i = 0; i < parameters.Length; i++)
             {
-                var parameter = parameters[i];
-                ConsoleLogger.Warn("Parameter ({1}) [{0}]: ({2})", i, parameter.GetType(), parameter);
+                var parameter = parameters[i] ?? "null";
+                ConsoleLogger.Warn("\tParameter ({1}) [{0}]: ({2})", i, parameter.GetType(), parameter);
             }
 
-            ConsoleLogger.Warn("MDToken: {0}", methodBase.MetadataToken);
-            ConsoleLogger.Warn("Returns: {0}", returnValue);
+            var returnType = method is MethodInfo info ? info.ReturnType.FullName : "System.Object";
+            ConsoleLogger.Warn("\tMDToken: 0x{0:X4}", method.MetadataToken);
+            ConsoleLogger.Warn("\tReturn Type: {0}", returnType);
+        }
 
-            if (returnValue != null)
-                ConsoleLogger.Warn("Return type: {0}\n", returnValue.GetType());
-
-            return returnValue;
+        public static void Postfix(ref object __instance, ref object __result, ref object obj, ref object[] parameters, ref object[] arguments)
+        {
+            ConsoleLogger.Warn("\tReturns: {0}", __result);
         }
     }
-}
 ```
 
 ## Current Features
 - Tracing invokes in virtualized methods.
 - Manipulating parameters and return values.
+
+## Todo
+- Change this to support more VM's
+- VMP Stack tracing
+- Bypass VMP Debugger Detection
+- Bypass VMP CRC Check
+- Nice WPF GUI
 
 # FAQ
 ### What is code virtualization? 
@@ -95,7 +89,13 @@ As VMProtect describes it on their's website. Code virtualization is the next st
 No, isn't even meant for devirtualization.
 
 # Credits
+* [Washi](https://github.com/Washi1337) Overall credits for the project and inspiration with UnsafeInvokeInternal, thanks <3
+
 This tool uses the following (open source) software:
 * [dnlib](https://github.com/0xd4d/dnlib) by [0xd4d](https://github.com/0xd4d), licensed under the MIT license, for reading/writing assemblies.
-* [Harmony](https://github.com/pardeike/Harmony) by [Andreas Pardeike](https://github.com/pardeike), licensed under the MIT license, for patching the stacktrace which allows for reflection invocation to be used.
+* [Harmony](https://github.com/pardeike/Harmony) by [Andreas Pardeike](https://github.com/pardeike), licensed under the MIT license
 * [Serilog](https://github.com/serilog/serilog) provides diagnostic logging to files, the console, and elsewhere. It is easy to set up, has a clean API.
+
+
+## Want to support this project?
+BTC: bc1q048wrqztka5x2syt9mtj68uuf73vqry60s38vf

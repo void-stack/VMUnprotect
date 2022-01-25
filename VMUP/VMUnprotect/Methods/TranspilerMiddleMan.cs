@@ -4,18 +4,17 @@ using System.Globalization;
 using System.Reflection;
 using VMUnprotect.Utils;
 
-namespace VMUnprotect
+namespace VMUnprotect.Methods
 {
-    /// <summary>
-    ///     Works as Middle Man to make life easier
-    /// </summary>
-    internal static class MiddleMan
+    public static class TranspilerMiddleMan
     {
         /// <summary>
         ///     This function manipulate can manipulate, log actual invokes from virtualized VMP functions.
         /// </summary>
         public static object VmpMethodLogger(object obj, BindingFlags? bindingFlags, Binder binder, ref object[] parameters, CultureInfo culture, MethodBase methodBase)
         {
+            // THIS IS OLD METHOD!!! Check Methods/MiddleMan.cs
+            
             // Invoke the method and get return value.
             var returnValue = methodBase.Invoke(obj, parameters);
 
