@@ -13,7 +13,7 @@ namespace VMUnprotect.Core.Helpers {
                     null                   => "null",
                     string x               => $"\"{x}\"",
                     IEnumerable enumerable => $"{obj.GetType().Name} {{{string.Join(", ", enumerable.Cast<object>().Select(FormatObject))}}}",
-                    _                      => obj.ToString()
+                    var _                  => obj.ToString()
                 };
             }
             catch (Exception) {

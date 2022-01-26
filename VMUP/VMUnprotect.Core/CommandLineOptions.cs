@@ -8,7 +8,10 @@ namespace VMUnprotect.Core {
         [Option(Default = false, HelpText = "Use an older method that makes use of Transpiler (not recommended).", Required = false)]
         public bool UseTranspiler { get; set; }
 
-        [Option(Default = true, HelpText = "Enable logs from Harmony.", Required = false)]
+        [Option(Default = false, HelpText = "Disable or Enable logs from Harmony.", Required = false)]
         public bool EnableHarmonyLogs { get; set; }
+
+        [Option(Default = false, HelpText = "Bypass VMProtect Anti Debug.", Required = false)]
+        public bool BypassAntiDebug { get; set; }
     }
 }

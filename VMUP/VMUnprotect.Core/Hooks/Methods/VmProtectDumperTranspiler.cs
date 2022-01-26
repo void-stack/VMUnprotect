@@ -12,7 +12,6 @@ namespace VMUnprotect.Core.Hooks.Methods {
     internal class Targets {
         private static readonly ILogger Logger = Engine.Logger;
 
-
         /// <summary>
         ///     This function is used by current VMProtect version.
         /// </summary>
@@ -113,7 +112,6 @@ namespace VMUnprotect.Core.Hooks.Methods {
     /// </summary>
     public static class VmProtectDumperTranspiler {
         private static readonly ILogger Logger = Engine.Logger;
-
 
         /// <summary>A transpiler that replaces all occurrences of a given method with another with additional Ldarg_1 instruction</summary>
         /// <param name="instructions">The enumeration of <see cref="T:HarmonyLib.CodeInstruction" /> to act on</param>

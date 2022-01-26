@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using VMUnprotect.Core.Abstraction;
 using VMUnprotect.Core.MiddleMan;
 
@@ -13,19 +14,25 @@ namespace VMUnprotect.Core.Hooks.Methods {
         /// <summary>
         ///     Prefix of UnsafeInvoke, this runs before.
         /// </summary>
-        public static void InvokePrefix(ref object __instance, ref object obj, ref object[] parameters, ref object[] arguments) {
+        public static bool InvokePrefix(ref object __result, ref object __instance, ref object obj, ref object[] parameters, ref object[] arguments) {
             // Check if this invoke is coming from VMP Handler
             var isVmpFunction = Engine.Ctx.RuntimeStructure?.FunctionHandler != null
                                 && Engine.Ctx.RuntimeStructure != null
                                 && new StackTrace().GetFrame(3).GetMethod().MetadataToken == Engine.Ctx.RuntimeStructure.FunctionHandler.MDToken.ToInt32();
-
             if (!isVmpFunction)
-                return;
+                return true;
+
+            var methodInfo = (MethodInfo) __instance;
+
+            // Skip debugging functions
+            if (!VmProtectBypassAntiDebug.Filter(out __result, obj, arguments, methodInfo))
+                return false;
 
             CtxLogger.Info("VmProtectDumperUnsafeInvoke Prefix:");
             CtxLogger.Warn("{");
-            UnsafeInvokeMiddleMan.Prefix(ref __instance, ref obj, ref parameters, ref arguments);
+            return UnsafeInvokeMiddleMan.Prefix(ref __result, ref __instance, ref obj, ref parameters, ref arguments);
         }
+
 
         /// <summary>
         ///     Postfix of UnsafeInvoke, this runs after.
@@ -35,9 +42,11 @@ namespace VMUnprotect.Core.Hooks.Methods {
             var isVmpFunction = Engine.Ctx.RuntimeStructure?.FunctionHandler != null
                                 && Engine.Ctx.RuntimeStructure != null
                                 && new StackTrace().GetFrame(3).GetMethod().MetadataToken == Engine.Ctx.RuntimeStructure.FunctionHandler.MDToken.ToInt32();
-
             if (!isVmpFunction)
                 return;
+
+            // Find NtQueryInformationProcessDelegate
+            VmProtectBypassAntiDebug.FindNtQueryInformationProcessDelegate(__result, parameters);
 
             // Log it
             CtxLogger.Info("VmProtectDumperUnsafeInvoke Result:");

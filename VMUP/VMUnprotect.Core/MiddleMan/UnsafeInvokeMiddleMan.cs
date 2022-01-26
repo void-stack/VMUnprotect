@@ -14,17 +14,18 @@ namespace VMUnprotect.Core.MiddleMan {
         /// <summary>
         ///     A prefix is a method that is executed before the original method
         /// </summary>
-        public static void Prefix(ref object __instance, ref object obj, ref object[] parameters, ref object[] arguments) {
+        public static bool Prefix(ref object __result, ref object __instance, ref object obj, ref object[] parameters, ref object[] arguments) {
             var virtualizedMethodName = new StackTrace().GetFrame(7).GetMethod();
             var method = (MethodBase) __instance;
 
-            ConsoleLogger.Print("VMP MethodName: {0} (MDToken {1:X4})", virtualizedMethodName.FullDescription(), virtualizedMethodName.MetadataToken.ToString());
+            ConsoleLogger.Print("VMP MethodName: {0} (MDToken 0x{1:X4})", virtualizedMethodName.FullDescription(), virtualizedMethodName.MetadataToken.ToString());
             ConsoleLogger.Print("MethodName: {0}", method.Name);
             ConsoleLogger.Print("FullDescription: {0}", method.FullDescription());
             ConsoleLogger.Print("MethodType: {0}", method.GetType());
-            
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (obj is not null)
-                ConsoleLogger.Print("Obj: {0}", obj.GetType());
+                ConsoleLogger.Print("Obj: {0}", Formatter.FormatObject(obj));
 
             // Loop through parameters and log them
             for (var i = 0; i < parameters.Length; i++) {
@@ -35,6 +36,7 @@ namespace VMUnprotect.Core.MiddleMan {
             var returnType = method is MethodInfo info ? info.ReturnType.FullName : "System.Object";
             ConsoleLogger.Print("MDToken: 0x{0:X4}", method.MetadataToken);
             ConsoleLogger.Print("Return Type: {0}", returnType ?? "null");
+            return true;
         }
 
         /// <summary>

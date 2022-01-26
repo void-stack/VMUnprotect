@@ -8,19 +8,11 @@ namespace VMUnprotect.Core.Structure {
         /// <summary>
         ///     TypeDefinition of Virtual Machine
         /// </summary>
-        public TypeDef? VmTypeDef
-            {
-                get;
-                set;
-            }
+        public TypeDef? VmTypeDef { get; set; }
 
         /// <summary>
-        ///     Call handler of VMP's virtual machine
+        ///     Call handler of VMP Function Handler
         /// </summary>
-        public MethodDef? FunctionHandler
-            {
-                get;
-                set;
-            }
+        public MethodDef? FunctionHandler { get; set; }
     }
 }

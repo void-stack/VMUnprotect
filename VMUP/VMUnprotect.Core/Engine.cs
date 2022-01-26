@@ -11,17 +11,8 @@ namespace VMUnprotect.Core {
             Ctx = context;
             Logger = context.Logger;
         }
-        internal static Context Ctx
-            {
-                get;
-                private set;
-            } = null!;
-
-        public static ILogger Logger
-            {
-                get;
-                private set;
-            } = new EmptyLogger();
+        internal static Context Ctx { get; private set; } = null!;
+        public static ILogger Logger { get; private set; } = new EmptyLogger();
 
         public void Start() {
             var fileEntryPoint = Ctx.VmpAssembly.EntryPoint;
@@ -41,7 +32,7 @@ namespace VMUnprotect.Core {
             RuntimeHelpers.RunModuleConstructor(moduleHandle);
 
             Logger.Info("--- Invoking assembly.\n");
-            fileEntryPoint.Invoke(null, parameters.Length == 0 ? null : new object[] {null!});
+            fileEntryPoint.Invoke(null, parameters.Length == 0 ? null : new object[] {new[] {string.Empty}}); // parse arguments from commandlineoptions
         }
         private static void ApplyHooks() {
             try {

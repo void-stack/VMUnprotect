@@ -19,7 +19,8 @@
 VMUnprotect.exe 
   -f, --file             Required. Path to file.
   --usetranspiler        (Default: false) Use an older method that makes use of Transpiler (not recommended).
-  --enableharmonylogs    (Default: true) Enable logs from Harmony.
+  --enableharmonylogs    (Default: false) Disable or Enable logs from Harmony.
+  --bypassantidebug      (Default: false) Bypass VMProtect Anti Debug.
   --help                 Display this help screen.
   --version              Display version information.
 ```
@@ -27,15 +28,15 @@ VMUnprotect.exe
 # Supported Protections
 Note: ***All Supported Protections are working combined***
 
-Protection Name | Is supported | 
-------------- | :----: 
-Memory Protection | Yes 
-Import Protection | Yes 
-Resource Protection | Yes 
-Debugger Detection | Yes 
-Virtualization Tools | Yes 
-Strip Debug Information | Yes 
-Pack the Output File | No
+Protection Name         | Is supported 
+------------------------|-------------- 
+Memory Protection       | ✓  
+Import Protection       | ✓  
+Resource Protection     | ✓  
+Debugger Detection      | ✓  
+Virtualization Tools    | ✓ 
+Strip Debug Information | ✓  
+Pack the Output File    | ✓ 
 
 # Usage can be found in ```MiddleMan```
 ```csharp
@@ -91,11 +92,13 @@ namespace VMUnprotect.Core.MiddleMan {
 ## Current Features
 - Tracing invokes in virtualized methods.
 - Manipulating parameters and return values.
+- Bypass NtQueryInformationProcess, IsLogging, get_IsAttached
+
 
 ## Todo
 - Change this to support more VM's
 - VMP Stack tracing
-- Bypass VMP Debugger Detection
+- Bypass VMP Debugger Detection ✓
 - Bypass VMP CRC Check
 - Nice WPF GUI
 

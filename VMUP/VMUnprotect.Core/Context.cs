@@ -9,7 +9,7 @@ namespace VMUnprotect.Core {
     public class Context {
         public Context(ILogger logger, string vmpAssembly, CommandLineOptions options) {
             Harmony.DEBUG = options.EnableHarmonyLogs;
-            
+
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Options = options ?? throw new ArgumentNullException(nameof(options));
 
