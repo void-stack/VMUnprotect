@@ -9,7 +9,7 @@
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>VMUnprotect</RootNamespace>
         <AssemblyName>VMUnprotect</AssemblyName>
-        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <LangVersion>9</LangVersion>
         <ApplicationIcon>vmup.ico</ApplicationIcon>
@@ -32,14 +32,14 @@
         <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
+        <DocumentationFile></DocumentationFile>
     </PropertyGroup>
     <PropertyGroup>
         <ApplicationManifest>manifest.manifest</ApplicationManifest>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="0Harmony, Version=2.1.1.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\packages\Lib.Harmony.2.1.1\lib\net472\0Harmony.dll</HintPath>
-            <Private>True</Private>
+            <HintPath>..\..\..\..\..\.nuget\packages\lib.harmony\2.1.1\lib\net45\0Harmony.dll</HintPath>
         </Reference>
         <Reference Include="CommandLine, Version=2.9.0.0, Culture=neutral, PublicKeyToken=5a870481e358d379">
             <HintPath>..\packages\CommandLineParser.2.9.0-preview1\lib\net461\CommandLine.dll</HintPath>
@@ -69,25 +69,19 @@
         <Reference Include="System.Xml"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="CommandLineOptions.cs"/>
-        <Compile Include="Hooks\HooksManager.cs"/>
-        <Compile Include="Hooks\Methods\GetCallingAssemblyPatch.cs"/>
-        <Compile Include="Hooks\Methods\GetEntryAssemblyPatch.cs"/>
-        <Compile Include="Hooks\Methods\VmProtectDumperTranspiler.cs"/>
-        <Compile Include="Hooks\Methods\VmProtectDumperUnsafeInvoke.cs"/>
-        <Compile Include="Init\Loader.cs"/>
-        <Compile Include="Init\VMAnalyzer.cs"/>
-        <Compile Include="Init\VMRuntimeStructure.cs"/>
-        <Compile Include="Methods\MiddleMan.cs"/>
-        <Compile Include="Methods\TranspilerMiddleMan.cs"/>
         <Compile Include="Program.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="Utils\ConsoleLogger.cs"/>
-        <Compile Include="Utils\StringCounts.cs"/>
     </ItemGroup>
     <ItemGroup>
         <None Include="manifest.manifest"/>
         <None Include="packages.config"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\VMUnprotect.Core\VMUnprotect.Core.csproj">
+            <Project>{d57b9692-671d-450b-b21c-24ba0129b888}</Project>
+            <Name>VMUnprotect.Core</Name>
+        </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

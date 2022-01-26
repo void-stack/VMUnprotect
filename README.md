@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="256" heigth="256" src="Images/vmup.png">
+  <img width="256" heigth="256" src="Docs/vmup.png">
 <h1 align="center">VMUnprotect.NET</h1>
 <p align="center">
   <strong>VMUnprotect</strong> is a project engaged in hunting virtualized <a href="https://vmpsoft.com">VMProtect</a> methods. It makes use of <a href="https://github.com/pardeike/Harmony">Harmony</a> to dynamically read <strong>VMP</strong> behavior. Currently only supports method administration. Works on <a href="https://vmpsoft.com/20210919/vmprotect-3-5-1/">VMProtect 3.5.1</a> (Latest) and few versions back.
@@ -12,15 +12,16 @@
 </p>
 
 ## Showcase
-<img src="Images/show.gif">
+<img src="Docs/show.gif">
 
 # Usage
 ```sh
 VMUnprotect.exe 
-  -f, --file         Required. Path to file.
-  --usetranspiler    (Default: false) Use an older method that makes use of Transpiler (not recommended).
-  --help             Display this help screen.
-  --version          Display version information.
+  -f, --file             Required. Path to file.
+  --usetranspiler        (Default: false) Use an older method that makes use of Transpiler (not recommended).
+  --enableharmonylogs    (Default: true) Enable logs from Harmony.
+  --help                 Display this help screen.
+  --version              Display version information.
 ```
 
 # Supported Protections
@@ -36,36 +37,53 @@ Virtualization Tools | Yes
 Strip Debug Information | Yes 
 Pack the Output File | No
 
-# Usage can be found in ```Methods\MiddleMan.cs```
+# Usage can be found in ```MiddleMan```
 ```csharp
-internal static class MiddleMan
-{
-    public static void Prefix(ref object __instance, ref object obj, ref object[] parameters, ref object[] arguments)
-    {
-        var virtualizedMethodName = new StackTrace().GetFrame(7).GetMethod();
-        var method = (MethodBase) __instance;
+using HarmonyLib;
+using System.Diagnostics;
+using System.Reflection;
+using VMUnprotect.Core.Abstraction;
+using VMUnprotect.Core.Helpers;
 
-        ConsoleLogger.Warn("\tVMP MethodName: {0} (MDToken {1:X4})", virtualizedMethodName.FullDescription(), virtualizedMethodName.MetadataToken.ToString());
+namespace VMUnprotect.Core.MiddleMan {
+    /// <summary>
+    ///     Works as Middle Man to make life easier
+    /// </summary>
+    public static class UnsafeInvokeMiddleMan {
+        private static readonly ILogger ConsoleLogger = Engine.Logger;
 
-        ConsoleLogger.Warn("\tMethodName: {0}", method.Name);
-        ConsoleLogger.Warn("\tFullDescription: {0}", method.FullDescription());
-        ConsoleLogger.Warn("\tMethodType: {0}", method.GetType());
-        if (obj != null) ConsoleLogger.Warn("\nObj: {0}", obj.GetType());
-        
-        // Loop through parameters and log them
-        for (var i = 0; i < parameters.Length; i++)
-        {
-            var parameter = parameters[i] ?? "null";
-            ConsoleLogger.Warn("\tParameter ({1}) [{0}]: ({2})", i, parameter.GetType(), parameter);
+        /// <summary>
+        ///     A prefix is a method that is executed before the original method
+        /// </summary>
+        public static void Prefix(ref object __instance, ref object obj, ref object[] parameters, ref object[] arguments) {
+            var virtualizedMethodName = new StackTrace().GetFrame(7).GetMethod();
+            var method = (MethodBase) __instance;
+
+            ConsoleLogger.Print("VMP MethodName: {0} (MDToken {1:X4})", virtualizedMethodName.FullDescription(), virtualizedMethodName.MetadataToken.ToString());
+            ConsoleLogger.Print("MethodName: {0}", method.Name);
+            ConsoleLogger.Print("FullDescription: {0}", method.FullDescription());
+            ConsoleLogger.Print("MethodType: {0}", method.GetType());
+            
+            if (obj is not null)
+                ConsoleLogger.Print("Obj: {0}", obj.GetType());
+
+            // Loop through parameters and log them
+            for (var i = 0; i < parameters.Length; i++) {
+                var parameter = parameters[i];
+                ConsoleLogger.Print("Parameter ({1}) [{0}]: ({2})", i, parameter.GetType(), Formatter.FormatObject(parameter));
+            }
+
+            var returnType = method is MethodInfo info ? info.ReturnType.FullName : "System.Object";
+            ConsoleLogger.Print("MDToken: 0x{0:X4}", method.MetadataToken);
+            ConsoleLogger.Print("Return Type: {0}", returnType ?? "null");
         }
-        var returnType = method is MethodInfo info ? info.ReturnType.FullName : "System.Object";
-        ConsoleLogger.Warn("\tMDToken: 0x{0:X4}", method.MetadataToken);
-        ConsoleLogger.Warn("\tReturn Type: {0}", returnType);
-    }
-    
-    public static void Postfix(ref object __instance, ref object __result, ref object obj, ref object[] parameters, ref object[] arguments)
-    {
-        ConsoleLogger.Warn("\tReturns: {0}", __result);
+
+        /// <summary>
+        ///     A postfix is a method that is executed after the original method
+        /// </summary>
+        public static void Postfix(ref object __instance, ref object __result, ref object obj, ref object[] parameters, ref object[] arguments) {
+            ConsoleLogger.Print("Returns: {0}", __result);
+        }
     }
 }
 ```

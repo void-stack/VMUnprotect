@@ -5,16 +5,14 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using VMUnprotect.Methods;
-using VMUnprotect.Utils;
+using VMUnprotect.Core.Abstraction;
+using VMUnprotect.Core.MiddleMan;
 
-namespace VMUnprotect.Hooks.Methods
-{
-    /// <summary>
-    ///     This class holds target functions.
-    /// </summary>
-    internal class Targets
-    {
+namespace VMUnprotect.Core.Hooks.Methods {
+    internal class Targets {
+        private static readonly ILogger Logger = Engine.Logger;
+
+
         /// <summary>
         ///     This function is used by current VMProtect version.
         /// </summary>
@@ -56,20 +54,17 @@ namespace VMUnprotect.Hooks.Methods
         ///     Before calling the method or constructor, <see langword="Invoke" /> checks to see if the user has access permission
         ///     and verifies that the parameters are valid.
         /// </returns>
-        public object HookedInvoke(object obj, BindingFlags bindingFlags, Binder binder, object[] parameters, CultureInfo culture, MethodBase methodBase)
-        {
-            try
-            {
+        public object HookedInvoke(object obj, BindingFlags bindingFlags, Binder binder, object[] parameters, CultureInfo culture, MethodBase methodBase) {
+            try {
                 // Indicate this method was called by newer version of VMP.
-                ConsoleLogger.Warn("============================================= HookedInvoke =============================================\n");
+                Logger.Warn("============================================= HookedInvoke =============================================\n");
 
                 // Route the arguments and return value to our middleman function where they can be manipulated or logged.
                 return TranspilerMiddleMan.VmpMethodLogger(obj, null, null, ref parameters, null, methodBase);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 // Log the exception.
-                ConsoleLogger.Error(ex.StackTrace);
+                Logger.Error(ex.StackTrace);
                 return null;
             }
         }
@@ -97,20 +92,17 @@ namespace VMUnprotect.Hooks.Methods
         ///     An object containing the return value of the invoked method, or <see langword="null" /> in the case of a
         ///     constructor.
         /// </returns>
-        public object HookedInvokeOld(object obj, object[] parameters, MethodBase methodBase)
-        {
-            try
-            {
+        public object HookedInvokeOld(object obj, object[] parameters, MethodBase methodBase) {
+            try {
                 // Indicate this method was called by older version of VMP.
-                ConsoleLogger.Warn("============================================= HookedInvokeOld =============================================\n");
+                Logger.Warn("============================================= HookedInvokeOld =============================================\n");
 
                 // Route the arguments and return value to our middleman function where they can be manipulated or logged.
                 return TranspilerMiddleMan.VmpMethodLogger(obj, null, null, ref parameters, null, methodBase);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 // Log the exception.
-                ConsoleLogger.Error(ex.StackTrace);
+                Logger.Error(ex.StackTrace);
                 return null;
             }
         }
@@ -119,22 +111,22 @@ namespace VMUnprotect.Hooks.Methods
     /// <summary>
     ///     This class contains Harmony Patches
     /// </summary>
-    public static class VmProtectDumperTranspiler
-    {
+    public static class VmProtectDumperTranspiler {
+        private static readonly ILogger Logger = Engine.Logger;
+
+
         /// <summary>A transpiler that replaces all occurrences of a given method with another with additional Ldarg_1 instruction</summary>
         /// <param name="instructions">The enumeration of <see cref="T:HarmonyLib.CodeInstruction" /> to act on</param>
         /// <param name="from">Method to search for</param>
         /// <param name="to">Method to replace with</param>
         /// <returns>Modified enumeration of <see cref="T:HarmonyLib.CodeInstruction" /></returns>
-        private static IEnumerable<CodeInstruction> ReplaceVmpInvoke(this IEnumerable<CodeInstruction> instructions, MethodBase from, MethodBase to)
-        {
+        private static IEnumerable<CodeInstruction> ReplaceVmpInvoke(this IEnumerable<CodeInstruction> instructions, MethodBase from, MethodBase to) {
             if ((object) from == null) throw new ArgumentException("Unexpected null argument", nameof(from));
             if ((object) to == null) throw new ArgumentException("Unexpected null argument", nameof(to));
 
             var code = new List<CodeInstruction>(instructions);
 
-            for (var x = 0; x < code.Count; x++)
-            {
+            for (var x = 0; x < code.Count; x++) {
                 var ins = code[x];
                 if (ins.operand as MethodBase != from) continue;
 
@@ -145,7 +137,7 @@ namespace VMUnprotect.Hooks.Methods
                 // insert additional Ldarg_1 which corresponds to MethodBase of invoked function.
                 // TODO: Improve this, can be easily broken by obfuscation or future VMP updates
                 code.Insert(x, new CodeInstruction(OpCodes.Ldarg_1));
-                ConsoleLogger.Info("Replaced with custom Invoke and injected MethodBase argument at {0}.", x);
+                Logger.Info("Replaced with custom Invoke and injected MethodBase argument at {0}.", x);
             }
 
             return code.AsEnumerable();
@@ -154,17 +146,15 @@ namespace VMUnprotect.Hooks.Methods
         /// <summary>A transpiler that alters instructions that calls specific method</summary>
         /// <param name="instructions">The enumeration of <see cref="T:HarmonyLib.CodeInstruction" /> to act on</param>
         /// <returns>Modified enumeration of <see cref="T:HarmonyLib.CodeInstruction" /></returns>
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            ConsoleLogger.Debug("VMP Function Handler Transpiler");
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+            Logger.Debug("VMP Function Handler Transpiler");
 
             var codeInstructions = instructions.ToList();
 
             // Replace all occurrences of MethodBase.Invoke with our debug version.
             return codeInstructions.ReplaceVmpInvoke(AccessTools.Method(typeof(MethodBase),
                         "Invoke",
-                        new[]
-                        {
+                        new[] {
                             typeof(object), typeof(BindingFlags), typeof(Binder), typeof(object[]),
                             typeof(CultureInfo)
                         }),

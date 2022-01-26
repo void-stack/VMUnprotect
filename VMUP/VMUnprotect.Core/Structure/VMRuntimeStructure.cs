@@ -1,28 +1,26 @@
 ﻿using dnlib.DotNet;
 
-namespace VMUnprotect
-{
+namespace VMUnprotect.Core.Structure {
     /// <summary>
     ///     Structure of VMP Virtual Machine
     /// </summary>
-    public class VmRuntimeStructure
-    {
+    public class VmRuntimeStructure {
         /// <summary>
         ///     TypeDefinition of Virtual Machine
         /// </summary>
-        public TypeDef VmTypeDef
-        {
-            get;
-            set;
-        }
+        public TypeDef? VmTypeDef
+            {
+                get;
+                set;
+            }
 
         /// <summary>
         ///     Call handler of VMP's virtual machine
         /// </summary>
-        public MethodDef FunctionHandler
-        {
-            get;
-            set;
-        }
+        public MethodDef? FunctionHandler
+            {
+                get;
+                set;
+            }
     }
 }
