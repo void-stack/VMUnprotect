@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="256" heigth="256" src="Docs/vmup.png">
+  <img width="256" heigth="256" src="docs/vmup.png">
 <h1 align="center">VMUnprotect.NET</h1>
 <p align="center">
   <strong>VMUnprotect</strong> is a project engaged in hunting virtualized <a href="https://vmpsoft.com">VMProtect</a> methods. It makes use of <a href="https://github.com/pardeike/Harmony">Harmony</a> to dynamically read <strong>VMP</strong> behavior. Currently only supports method administration. Works on <a href="https://vmpsoft.com/20210919/vmprotect-3-5-1/">VMProtect 3.5.1</a> (Latest) and few versions back.
@@ -12,7 +12,7 @@
 </p>
 
 ## Showcase
-<img src="Docs/show.gif">
+<img src="docs/show.gif">
 
 # Usage
 ```sh
