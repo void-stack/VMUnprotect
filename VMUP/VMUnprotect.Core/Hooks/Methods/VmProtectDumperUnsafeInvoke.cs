@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 using VMUnprotect.Core.Abstraction;
 using VMUnprotect.Core.MiddleMan;
 
@@ -22,17 +21,13 @@ namespace VMUnprotect.Core.Hooks.Methods {
             if (!isVmpFunction)
                 return true;
 
-            var methodInfo = (MethodInfo) __instance;
-
-            // Skip debugging functions
-            if (!VmProtectBypassAntiDebug.Filter(out __result, obj, arguments, methodInfo))
-                return false;
+            // Bypass NtQueryInformationProcess Anti Debug Feature
+            NtQueryInformationProcessPatch.OverwriteProcessInformation(obj, ref arguments);
 
             CtxLogger.Info("VmProtectDumperUnsafeInvoke Prefix:");
             CtxLogger.Warn("{");
             return UnsafeInvokeMiddleMan.Prefix(ref __result, ref __instance, ref obj, ref parameters, ref arguments);
         }
-
 
         /// <summary>
         ///     Postfix of UnsafeInvoke, this runs after.
@@ -45,8 +40,8 @@ namespace VMUnprotect.Core.Hooks.Methods {
             if (!isVmpFunction)
                 return;
 
-            // Find NtQueryInformationProcessDelegate
-            VmProtectBypassAntiDebug.FindNtQueryInformationProcessDelegate(__result, parameters);
+            // Steal delegate for NtQueryInformationProcess
+            NtQueryInformationProcessPatch.GetDelegateForFunctionPointer(__result, parameters);
 
             // Log it
             CtxLogger.Info("VmProtectDumperUnsafeInvoke Result:");

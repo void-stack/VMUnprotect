@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using System;
-using System.Reflection;
 using VMUnprotect.Core.Abstraction;
 using VMUnprotect.Core.Hooks.Methods;
 
@@ -37,12 +36,18 @@ namespace VMUnprotect.Core.Hooks {
 
                     // Apply transpiler to the function handler (This is old method not recommended)
                     ctx.Harmony.Patch(resolvedVmpHandler, transpiler: new HarmonyMethod(transpiler));
-                }
-                    break;
+                } break;
                 case false: {
+                    var runtimeMethodInfoType = AccessTools.TypeByName("System.Reflection.RuntimeMethodInfo");
+
+                    if (runtimeMethodInfoType is null)
+                        throw new Exception("Failed to find System.Reflection.RuntimeMethodInfo");
+
                     // Get method for patch
-                    var invokeMethod = typeof(object).Assembly.GetType("System.Reflection.RuntimeMethodInfo")
-                        .GetMethod("UnsafeInvokeInternal", BindingFlags.NonPublic | BindingFlags.Instance);
+                    var invokeMethod = AccessTools.DeclaredMethod(runtimeMethodInfoType, "UnsafeInvokeInternal");
+
+                    if (invokeMethod is null)
+                        throw new Exception($"Failed to find {nameof(runtimeMethodInfoType)}.UnsafeInvokeInternal");
 
                     // Prepare prefix and postfix
                     var prefix = typeof(VmProtectDumperUnsafeInvoke).GetMethod(nameof(VmProtectDumperUnsafeInvoke.InvokePrefix));
@@ -51,8 +56,7 @@ namespace VMUnprotect.Core.Hooks {
                     // Patch
                     ctx.Harmony.Patch(invokeMethod, new HarmonyMethod(prefix));
                     ctx.Harmony.Patch(invokeMethod, postfix: new HarmonyMethod(postfix));
-                }
-                    break;
+                } break;
             }
         }
     }

@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>10</LangVersion>
         <TargetFramework>net48</TargetFramework>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>

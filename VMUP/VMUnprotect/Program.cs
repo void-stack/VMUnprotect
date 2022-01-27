@@ -21,24 +21,24 @@ namespace VMUnprotect {
         public static void Main(string[] args) {
             ConsoleLogger.Banner(AsciiArt);
             Parser.Default.ParseArguments<CommandLineOptions>(args)
-                .WithParsed(options => {
-                    var file = Path.GetFullPath(options.FilePath);
-                    var filename = Path.GetFileName(options.FilePath);
-                    var logger = new ConsoleLogger(filename);
-
-                    if (!File.Exists(file)) {
-                        logger.Error($"{file} is not a file or it does not exist");
-                        Console.ReadLine();
-                        return;
-                    }
-
-                    new Engine(new Context(logger, file, options)).Start();
-                    Console.ReadKey();
-                })
-                .WithNotParsed(errors => {
-                    Console.WriteLine("Errors: {0}", string.Join(", ", errors.Select(ex => ex.Tag)));
-                    Console.ReadKey();
-                });
+            .WithParsed(options => {
+                var file = Path.GetFullPath(options.FilePath);
+                var filename = Path.GetFileName(options.FilePath);
+                var logger = new ConsoleLogger(filename);
+            
+                if (!File.Exists(file)) {
+                    logger.Error($"{file} is not a file or it does not exist");
+                    Console.ReadLine();
+                    return;
+                }
+            
+                new Engine(new Context(logger, file, options)).Start();
+                Console.ReadKey();
+            })
+            .WithNotParsed(errors => {
+                Console.WriteLine("Errors: {0}", string.Join(", ", errors.Select(ex => ex.Tag)));
+                Console.ReadKey();
+            });
             Environment.Exit(0);
         }
     }

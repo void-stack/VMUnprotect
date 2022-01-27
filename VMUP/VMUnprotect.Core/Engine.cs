@@ -14,6 +14,10 @@ namespace VMUnprotect.Core {
         internal static Context Ctx { get; private set; } = null!;
         public static ILogger Logger { get; private set; } = new EmptyLogger();
 
+
+        /// <summary>
+        ///     Prepare assembly to launch
+        /// </summary>
         public void Start() {
             var fileEntryPoint = Ctx.VmpAssembly.EntryPoint;
             var moduleHandle = Ctx.VmpAssembly.ManifestModule.ModuleHandle;
@@ -34,15 +38,22 @@ namespace VMUnprotect.Core {
             Logger.Info("--- Invoking assembly.\n");
             fileEntryPoint.Invoke(null, parameters.Length == 0 ? null : new object[] {new[] {string.Empty}}); // parse arguments from commandlineoptions
         }
+
+        /// <summary>
+        ///     Apply Harmony Patches
+        /// </summary>
         private static void ApplyHooks() {
             try {
                 HooksManager.HooksApply(Ctx);
             }
             catch (Exception ex) {
-                Logger.Error("Failed to apply Harmony patches: {0}", ex.StackTrace);
+                Logger.Error("Failed to apply Harmony patches: {0}", ex);
             }
         }
 
+        /// <summary>
+        ///     Search for VMProtect Function Handler, etc...
+        /// </summary>
         private void AnalyzeStructure() {
             try {
                 VmAnalyzer.Run(Ctx);
