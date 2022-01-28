@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMUnprotect", "VMUnprotect\VMUnprotect.csproj", "{42C88429-9A67-4087-91BD-7D76383BC86D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMUnprotect.Core", "VMUnprotect.Core\VMUnprotect.Core.csproj", "{D57B9692-671D-450B-B21C-24BA0129B888}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMUnprotect.Runtime", "VMUnprotect.Runtime\VMUnprotect.Runtime.csproj", "{3EE03C52-C17B-4771-BF5A-32D04A2D435E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +14,9 @@ Global
 		{42C88429-9A67-4087-91BD-7D76383BC86D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42C88429-9A67-4087-91BD-7D76383BC86D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42C88429-9A67-4087-91BD-7D76383BC86D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D57B9692-671D-450B-B21C-24BA0129B888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D57B9692-671D-450B-B21C-24BA0129B888}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D57B9692-671D-450B-B21C-24BA0129B888}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D57B9692-671D-450B-B21C-24BA0129B888}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EE03C52-C17B-4771-BF5A-32D04A2D435E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EE03C52-C17B-4771-BF5A-32D04A2D435E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EE03C52-C17B-4771-BF5A-32D04A2D435E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EE03C52-C17B-4771-BF5A-32D04A2D435E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
