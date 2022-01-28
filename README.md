@@ -18,7 +18,6 @@
 ```sh
 VMUnprotect.exe 
   -f, --file             Required. Path to file.
-  --usetranspiler        (Default: false) Use an older method that makes use of Transpiler (not recommended).
   --enableharmonylogs    (Default: false) Disable or Enable logs from Harmony.
   --bypassantidebug      (Default: false) Bypass VMProtect Anti Debug.
   --help                 Display this help screen.
@@ -38,69 +37,45 @@ Virtualization Tools    | ✓
 Strip Debug Information | ✓  
 Pack the Output File    | ✓ 
 
-# Usage can be found in ```MiddleMan```
-```csharp
-using HarmonyLib;
-using System.Diagnostics;
-using System.Reflection;
-using VMUnprotect.Core.Abstraction;
-using VMUnprotect.Core.Helpers;
-
-namespace VMUnprotect.Core.MiddleMan {
-    /// <summary>
-    ///     Works as Middle Man to make life easier
-    /// </summary>
-    public static class UnsafeInvokeMiddleMan {
-        private static readonly ILogger ConsoleLogger = Engine.Logger;
-
-        /// <summary>
-        ///     A prefix is a method that is executed before the original method
-        /// </summary>
-        public static void Prefix(ref object __instance, ref object obj, ref object[] parameters, ref object[] arguments) {
-            var virtualizedMethodName = new StackTrace().GetFrame(7).GetMethod();
-            var method = (MethodBase) __instance;
-
-            ConsoleLogger.Print("VMP MethodName: {0} (MDToken {1:X4})", virtualizedMethodName.FullDescription(), virtualizedMethodName.MetadataToken.ToString());
-            ConsoleLogger.Print("MethodName: {0}", method.Name);
-            ConsoleLogger.Print("FullDescription: {0}", method.FullDescription());
-            ConsoleLogger.Print("MethodType: {0}", method.GetType());
-            
-            if (obj is not null)
-                ConsoleLogger.Print("Obj: {0}", obj.GetType());
-
-            // Loop through parameters and log them
-            for (var i = 0; i < parameters.Length; i++) {
-                var parameter = parameters[i];
-                ConsoleLogger.Print("Parameter ({1}) [{0}]: ({2})", i, parameter.GetType(), Formatter.FormatObject(parameter));
-            }
-
-            var returnType = method is MethodInfo info ? info.ReturnType.FullName : "System.Object";
-            ConsoleLogger.Print("MDToken: 0x{0:X4}", method.MetadataToken);
-            ConsoleLogger.Print("Return Type: {0}", returnType ?? "null");
-        }
-
-        /// <summary>
-        ///     A postfix is a method that is executed after the original method
-        /// </summary>
-        public static void Postfix(ref object __instance, ref object __result, ref object obj, ref object[] parameters, ref object[] arguments) {
-            ConsoleLogger.Print("Returns: {0}", __result);
-        }
-    }
-}
-```
-
 ## Current Features
 - Tracing invokes in virtualized methods.
 - Manipulating parameters and return values.
 - Bypass NtQueryInformationProcess, IsLogging, get_IsAttached
 
+## Usage can be found in VMUnprotect.Runtime.MiddleMan
+```csharp
+/// <summary>
+/// A prefix is a method that is executed before the original method
+/// </summary>
+public bool Prefix(ref object __result, ref object __instance, ref object obj, ref object[] parameters, ref object[] arguments) {
+    var virtualizedMethodName = new StackTrace().GetFrame(7).GetMethod();
+    var method = (MethodBase) __instance;
+    Logger.Print("VMP MethodName: {0} (MDToken 0x{1:X4})", virtualizedMethodName.FullDescription(),
+                 virtualizedMethodName.MetadataToken.ToString());
+    Logger.Print("MethodName: {0}", method.Name);
+    Logger.Print("FullDescription: {0}", method.FullDescription());
+    Logger.Print("MethodType: {0}", method.GetType());
+    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+    if (obj is not null)
+        Logger.Print("Obj: {0}", Formatter.FormatObject(obj));
+    // Loop through parameters and log them
+    for (var i = 0; i < parameters.Length; i++) {
+        var parameter = parameters[i];
+        Logger.Print("Parameter ({1}) [{0}]: ({2})", i, parameter.GetType(), Formatter.FormatObject(parameter));
+    }
+    var returnType = method is MethodInfo info ? info.ReturnType.FullName : "System.Object";
+    Logger.Print("MDToken: 0x{0:X4}", method.MetadataToken);
+    Logger.Print("Return Type: {0}", returnType ?? "null");
+    return true;
+}
 
-## Todo
-- Change this to support more VM's
-- VMP Stack tracing
-- Bypass VMP Debugger Detection ✓
-- Bypass VMP CRC Check
-- Nice WPF GUI
+/// <summary>
+///  A postfix is a method that is executed after the original method
+/// </summary>
+public void Postfix(ref object __instance, ref object __result, ref object obj, ref object[] parameters, ref object[] arguments) {
+    Logger.Print("Returns: {0}", __result);
+}
+```
 
 # FAQ
 ### What is code virtualization? 
@@ -109,6 +84,14 @@ As VMProtect describes it on their's website. Code virtualization is the next st
 ### Can it devirtualize VMP?
 No, isn't even meant for devirtualization.
 
+Todo                             | Done
+---------------------------------|---------
+Change this to support more VM's | X
+VMP Stack tracing                | X 
+Bypass VMP Debugger Detection    | ✓  
+Bypass VMP CRC Check             | X  
+WPF GUI                          | X 
+
 # Credits
 * [Washi](https://github.com/Washi1337) Overall credits for the project and inspiration with UnsafeInvokeInternal, thanks <3
 
@@ -116,7 +99,8 @@ This tool uses the following (open source) software:
 * [dnlib](https://github.com/0xd4d/dnlib) by [0xd4d](https://github.com/0xd4d), licensed under the MIT license, for reading/writing assemblies.
 * [Harmony](https://github.com/pardeike/Harmony) by [Andreas Pardeike](https://github.com/pardeike), licensed under the MIT license
 * [Serilog](https://github.com/serilog/serilog) provides diagnostic logging to files, the console, and elsewhere. It is easy to set up, has a clean API.
-
+* [commandline](https://github.com/commandlineparser/commandline) offers CLR applications a clean and concise API for manipulating command line arguments and related tasks
+* [Autofac](https://github.com/autofac/Autofac) Autofac is an IoC container for Microsoft .NET. It manages the dependencies between classes so that applications stay easy to change as they grow in size and complexity. This is achieved by treating regular .NET classes as components.
 
 ## Want to support this project?
 BTC: bc1q048wrqztka5x2syt9mtj68uuf73vqry60s38vf
