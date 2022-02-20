@@ -102,5 +102,6 @@ This tool uses the following (open source) software:
 * [commandline](https://github.com/commandlineparser/commandline) offers CLR applications a clean and concise API for manipulating command line arguments and related tasks
 * [Autofac](https://github.com/autofac/Autofac) Autofac is an IoC container for Microsoft .NET. It manages the dependencies between classes so that applications stay easy to change as they grow in size and complexity. This is achieved by treating regular .NET classes as components.
 
-## Want to support this project?
-BTC: bc1q048wrqztka5x2syt9mtj68uuf73vqry60s38vf
+## 💵 Want to buy me a Coffee?
+     - Donate BTC at `bc1q048wrqztka5x2syt9mtj68uuf73vqry60s38vf`
+     - Donate ETH at `0x86b2C17C94A1E6f35d498d17a37dc1f8A715139b`
