@@ -27,18 +27,27 @@ namespace VMUnprotect
             Console.Title = "VMUnprotect Ultimate";
             ConsoleLogger.Banner(AsciiArt);
 
+            if (args.Length > 0 && File.Exists(args[0]))
+                args[0] = $"-f {args[0]}";
+
             Parser.Default.ParseArguments<CommandLineOptions>(args)
                   .WithParsed(options => {
                       var fileName = Path.GetFileNameWithoutExtension(options.FilePath);
                       var fullPath = Path.GetFullPath(options.FilePath!);
 
                       var logger = new ConsoleLogger(fileName);
-
+                      logger.Info("Doesn't work? Make sure you dump the file before with: https://github.com/void-stack/VMUnprotect.Dumper");
+                      
                       var project = new Project {
                           TargetFilePath = fullPath
                       };
 
-                      project.Run(logger, options);
+                      try {
+                          project.Run(logger, options);
+                      } catch (Exception ex) {
+                          // ignored
+                      }
+
                       Console.ReadKey();
                   })
                   .WithNotParsed(errors => {

@@ -2,6 +2,7 @@
 using Serilog.Core;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
+using System.IO;
 using ILogger = VMUnprotect.Runtime.General.ILogger;
 
 namespace VMUnprotect.Utils
@@ -11,7 +12,10 @@ namespace VMUnprotect.Utils
         private readonly Logger _logger;
 
         public ConsoleLogger(string filename) {
-            _logger = new LoggerConfiguration().WriteTo.File($"{filename}_{DateTime.Now:HH-mm-ss}.vmuplog")
+            if (Directory.Exists("VMUP_Logs"))
+                Directory.CreateDirectory("VMUP_Logs");
+            
+            _logger = new LoggerConfiguration().WriteTo.File($"VMUP_Logs\\{filename}_{DateTime.Now:HH-mm-ss}.vmuplog")
                                                .WriteTo.Console(theme: AnsiConsoleTheme.Grayscale)
                                                .MinimumLevel.Verbose()
                                                .CreateLogger();

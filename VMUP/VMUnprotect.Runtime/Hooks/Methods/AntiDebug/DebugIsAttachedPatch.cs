@@ -28,9 +28,5 @@ namespace VMUnprotect.Runtime.Hooks.Methods.AntiDebug
             if (Ctx.Options.BypassAntiDebug)
                 PatchTranspiler(instance, TargetMethod);
         }
-
-        public override void Restore(Harmony instance) {
-            //Logger.Debug("Not implemented...");
-        }
     }
 }

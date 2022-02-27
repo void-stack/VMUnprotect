@@ -38,6 +38,7 @@ namespace VMUnprotect.Runtime.Hooks.Methods
             if (Ctx.Options.BypassAntiDebug)
                 Ctx.Scope.Resolve<INtQueryInformationProcessPatch>().OverwriteProcessInformation(obj, ref arguments);
 
+
             Logger.Info("VmProtectDumperUnsafeInvoke Prefix:");
             Logger.Warn("{");
             return Ctx.Scope.Resolve<IUnsafeInvokeMiddleMan>()
@@ -72,10 +73,6 @@ namespace VMUnprotect.Runtime.Hooks.Methods
         public override void Patch(Harmony harmony) {
             PatchPrefix(harmony, TargetMethod());
             PatchPostfix(harmony, TargetMethod());
-        }
-
-        public override void Restore(Harmony harmony) {
-            //Logger.Debug("Not implemented...");
         }
     }
 }

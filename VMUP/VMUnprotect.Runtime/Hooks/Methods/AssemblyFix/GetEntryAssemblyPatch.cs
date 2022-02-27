@@ -25,8 +25,5 @@ namespace VMUnprotect.Runtime.Hooks.Methods.AssemblyFix
             PatchPostfix(instance, TargetMethod);
         }
 
-        public override void Restore(Harmony instance) {
-            //Logger.Debug("Not implemented...");
-        }
     }
 }

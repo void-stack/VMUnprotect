@@ -20,7 +20,6 @@ namespace VMUnprotect.Runtime.General
             Builder.RegisterType<HooksManager>().As<IHooksManager>().SingleInstance();
 
             Builder.RegisterType<UnsafeInvokeMiddleMan>().As<IUnsafeInvokeMiddleMan>().SingleInstance();
-
             Builder.RegisterType<NtQueryInformationProcessPatch>().As<INtQueryInformationProcessPatch>().SingleInstance();
 
             Builder.RegisterModule(new VmProtectPatchesModule());

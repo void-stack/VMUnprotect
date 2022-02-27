@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using VMUnprotect.Runtime.General;
 using VMUnprotect.Runtime.Helpers;
@@ -12,6 +13,21 @@ namespace VMUnprotect.Runtime.Hooks
         private bool _isApplied;
 
         public HooksManager(Context ctx, ILogger logger) : base(ctx, logger) { }
+
+        public void RestoreAll()
+        {
+            if (!_isApplied)
+            {
+                return;
+            }
+
+            foreach (var patch in Ctx.Scope.Resolve<IEnumerable<IVmupHook>>()) {
+                Logger.Debug($"Restoring hook {patch.GetType().Name}");
+                patch.Restore(_harmony);
+            }
+
+            _isApplied = false;
+        }
 
         public void Initialize() {
             if (_isApplied)
@@ -28,7 +44,11 @@ namespace VMUnprotect.Runtime.Hooks
 
             foreach (var patch in Ctx.Scope.Resolve<IEnumerable<IVmupHook>>()) {
                 Logger.Debug($"Applying hook {patch.GetType().Name}");
-                patch.Patch(_harmony);
+                try {
+                    patch.Patch(_harmony);
+                } catch (Exception e) {
+                    Logger.Error($"Error patching {patch.GetType().Name}. Error: {e.Message}");
+                }
             }
 
             Logger.Info("Completed!");
@@ -39,5 +59,6 @@ namespace VMUnprotect.Runtime.Hooks
     {
         void Initialize();
         void ApplyHooks();
+        void RestoreAll();
     }
 }
