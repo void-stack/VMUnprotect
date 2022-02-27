@@ -23,6 +23,8 @@ VMUnprotect.exe
   --help                 Display this help screen.
   --version              Display version information.
 ```
+## Also checkout
+* [VMUnprotect.Dumper]( https://github.com/void-stack/VMUnprotect.Dumper)
 
 ### Doesn't work? Make sure you dump the file before with:
 * [VMUnprotect.Dumper](https://github.com/void-stack/VMUnprotect.Dumper)
