@@ -23,6 +23,8 @@ VMUnprotect.exe
   --help                 Display this help screen.
   --version              Display version information.
 ```
+## Also checkout
+* [VMUnprotect.Dumper]( https://github.com/void-stack/VMUnprotect.Dumper)
 
 # Supported Protections
 Note: ***All Supported Protections are working combined***
