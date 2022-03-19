@@ -95,7 +95,8 @@ Bypass VMP Debugger Detection    | ✓
 Bypass VMP CRC Check             | X  
 WPF GUI                          | X 
 
-# Credits
+
+# Credits, checkout my blog about [VMUnprotect](https://void-stack.github.io)
 * [Washi](https://github.com/Washi1337) Overall credits for the project and inspiration with UnsafeInvokeInternal, thanks <3
 
 This tool uses the following (open source) software:
