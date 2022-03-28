@@ -23,8 +23,6 @@ VMUnprotect.exe
   --help                 Display this help screen.
   --version              Display version information.
 ```
-## Also checkout
-* [VMUnprotect.Dumper]( https://github.com/void-stack/VMUnprotect.Dumper)
 
 ### Doesn't work? Make sure you dump the file before with:
 * [VMUnprotect.Dumper](https://github.com/void-stack/VMUnprotect.Dumper)
@@ -97,7 +95,8 @@ Bypass VMP Debugger Detection    | ✓
 Bypass VMP CRC Check             | X  
 WPF GUI                          | X 
 
-# Credits
+
+# Credits, checkout my blog about [VMUnprotect](https://void-stack.github.io)
 * [Washi](https://github.com/Washi1337) Overall credits for the project and inspiration with UnsafeInvokeInternal, thanks <3
 
 This tool uses the following (open source) software:
