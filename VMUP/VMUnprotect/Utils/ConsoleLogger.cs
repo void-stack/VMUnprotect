@@ -14,7 +14,7 @@ namespace VMUnprotect.Utils
         public ConsoleLogger(string filename) {
             if (Directory.Exists("VMUP_Logs"))
                 Directory.CreateDirectory("VMUP_Logs");
-            
+
             _logger = new LoggerConfiguration().WriteTo.File($"VMUP_Logs\\{filename}_{DateTime.Now:HH-mm-ss}.vmuplog")
                                                .WriteTo.Console(theme: AnsiConsoleTheme.Grayscale)
                                                .MinimumLevel.Verbose()

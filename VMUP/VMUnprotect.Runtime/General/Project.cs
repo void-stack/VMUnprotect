@@ -16,7 +16,7 @@ namespace VMUnprotect.Runtime.General
 
             Engine.Initialize(this, logger, options);
 
-            
+
             Engine.Run(this);
         }
     }

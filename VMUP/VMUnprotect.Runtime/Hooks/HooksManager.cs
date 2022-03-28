@@ -14,12 +14,9 @@ namespace VMUnprotect.Runtime.Hooks
 
         public HooksManager(Context ctx, ILogger logger) : base(ctx, logger) { }
 
-        public void RestoreAll()
-        {
+        public void RestoreAll() {
             if (!_isApplied)
-            {
                 return;
-            }
 
             foreach (var patch in Ctx.Scope.Resolve<IEnumerable<IVmupHook>>()) {
                 Logger.Debug($"Restoring hook {patch.GetType().Name}");

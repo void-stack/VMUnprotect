@@ -17,9 +17,6 @@ namespace VMUnprotect.Runtime.Structure
             if (functionHandler is null || vmTypeDef is null)
                 throw new ApplicationException("Could not locate VmProtectFunctionHandler.");
 
-            Logger.Debug("Found VmTypeDef, MDToken 0x{0:X4}", vmTypeDef.MDToken);
-            Logger.Debug("Found VMPFunctionHandler, MDToken 0x{0:X4}", functionHandler.MDToken);
-
             Ctx.VmRuntimeStructure = new VmRuntimeStructure {
                 FunctionHandler = functionHandler,
                 VmTypeDef = vmTypeDef
@@ -46,18 +43,40 @@ namespace VMUnprotect.Runtime.Structure
             TypeDef vmTypeDef = null;
 
             foreach (var type in module.GetTypes()) {
+                // search pattern for 3.5.1 and older
                 vmpHandler = type.Methods.Where(IsVmpFunctionHandler)
-                                 .FirstOrDefault(method => new LocalTypes(method).All(VmpFunctionHandlerLocals));
+                                 .FirstOrDefault(method => new LocalTypes(method).All(VmpFunctionHandlerLocals)) ?? type.Methods
+                    // Search for pattern in 3.6.0
+                    .Where(IsVmpFunctionHandlerNew)
+                    .FirstOrDefault(method => new LocalTypes(method).All(VmpFunctionHandlerLocals));
 
                 if (vmpHandler == null)
                     continue;
 
                 vmTypeDef = type;
+
+                Logger.Info("Found VmTypeDef, MDToken 0x{0:X4}", vmTypeDef.MDToken);
+                Logger.Info("Found VMPFunctionHandler, MDToken 0x{0:X4}", vmpHandler.MDToken);
                 break;
+            }
+
+            if (vmpHandler is null) {
+                Logger.Error("Could not find VMP Method handler? Are you using supported version of VMP?");
+                Console.ReadKey();
             }
 
             return (vmpHandler, vmTypeDef);
         }
+
+        /// <summary>
+        ///     Checks RetType and Params, etc of MethodDef
+        /// </summary>
+        /// <param name="method"></param>
+        /// <returns>Does method match the requirements</returns>
+        private static bool IsVmpFunctionHandlerNew(MethodDef method) {
+            return method is {IsStatic: false} && method.MethodSig.GetParamCount() == 0;
+        }
+
 
         /// <summary>
         ///     Checks RetType and Params, etc of MethodDef
@@ -70,7 +89,6 @@ namespace VMUnprotect.Runtime.Structure
                    method.MethodSig.Params[0].GetElementType() == ElementType.Class &&
                    method.MethodSig.Params[1].GetElementType() == ElementType.Boolean;
         }
-
     #endregion
     }
 

@@ -7,7 +7,7 @@ namespace VMUnprotect.Runtime.Hooks.Methods.AntiDebug
 {
     public class NtQueryInformationProcessPatch : Params, INtQueryInformationProcessPatch
     {
-        private IntPtr _ntQueryInformationProcessPtr = new(0);
+        private IntPtr _ntQueryInformationProcessPtr = new(0x0);
         public NtQueryInformationProcessPatch(Context ctx, ILogger logger) : base(ctx, logger) { }
         private Delegate NtQueryInformationProcessDelegate { get; set; }
 
@@ -30,7 +30,8 @@ namespace VMUnprotect.Runtime.Hooks.Methods.AntiDebug
             if (parameters.Any(x => x.Equals("NtQueryInformationProcess")))
                 _ntQueryInformationProcessPtr = (IntPtr) __result;
 
-            if (parameters.Any(x => x.Equals(_ntQueryInformationProcessPtr)))
+            if (parameters.Any(x => x.Equals(_ntQueryInformationProcessPtr) &&
+                                    _ntQueryInformationProcessPtr != new IntPtr(0x0)))
                 NtQueryInformationProcessDelegate = (Delegate) __result;
         }
     }

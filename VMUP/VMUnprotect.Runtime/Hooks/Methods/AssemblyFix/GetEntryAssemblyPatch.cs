@@ -24,6 +24,5 @@ namespace VMUnprotect.Runtime.Hooks.Methods.AssemblyFix
         public override void Patch(Harmony instance) {
             PatchPostfix(instance, TargetMethod);
         }
-
     }
 }

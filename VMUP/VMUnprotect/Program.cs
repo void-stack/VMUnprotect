@@ -20,7 +20,7 @@ namespace VMUnprotect
        	   \ ' /     _| |_\/_| |_    \ \__/ /    _| |_     
        	    \_/     |_____||_____|    `.__.'    |_____|
              https://github.com/void-stack/VMUnprotect
-       	     VMUnprotect Ultimate v 3.5.1                     
+       	     VMUnprotect Ultimate v 3.6.0                     
         ";
 
         public static void Main(string[] args) {
@@ -36,8 +36,9 @@ namespace VMUnprotect
                       var fullPath = Path.GetFullPath(options.FilePath!);
 
                       var logger = new ConsoleLogger(fileName);
-                      logger.Info("Doesn't work? Make sure you dump the file before with: https://github.com/void-stack/VMUnprotect.Dumper");
-                      
+                      logger.Info(
+                          "Doesn't work? Make sure you dump the file before with: https://github.com/void-stack/VMUnprotect.Dumper");
+
                       var project = new Project {
                           TargetFilePath = fullPath
                       };

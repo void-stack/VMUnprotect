@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using HarmonyLib;
-using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using VMUnprotect.Runtime.Hooks;
@@ -33,12 +32,12 @@ namespace VMUnprotect.Runtime.General
 
             using var scope = Container.BeginLifetimeScope();
             ctx.Scope = scope;
-            
+
             logger.Debug("Applying VMProtect hooks...");
             hooks.Initialize();
             hooks.ApplyHooks();
-       
-            
+
+
             logger.Debug("Invoking Target...");
             InvokeTarget(ctx, logger);
 

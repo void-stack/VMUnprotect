@@ -11,17 +11,16 @@ namespace VMUnprotect.Runtime.Hooks
     public abstract class VmUnprotectPatch : Params, IVmupHook
     {
         private readonly List<MethodBase> _activePatches = new();
-        
+
         protected VmUnprotectPatch(Context ctx, ILogger logger) : base(ctx, logger) { }
 
         public abstract void Patch(Harmony harmony);
 
-        public void Restore(Harmony harmony)
-        {
+        public void Restore(Harmony harmony) {
             foreach (var targetMethod in _activePatches)
                 harmony.Unpatch(targetMethod, HarmonyPatchType.All, harmony.Id);
         }
-        
+
         private HarmonyMethod GetHarmonyMethod(string methodName) {
 
             var method = AccessTools.DeclaredMethod(GetType(), methodName);
@@ -77,7 +76,7 @@ namespace VMUnprotect.Runtime.Hooks
 
             harmony.Patch(targetMethod, harmonyPrefixMethod, harmonyPostfixMethod, harmonyTranspilerMethod,
                           harmonyFinalizerMethod);
-            
+
             _activePatches.Add(targetMethod);
         }
     }
