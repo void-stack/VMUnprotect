@@ -1,5 +1,6 @@
 using dnlib.DotNet;
 using VMUnprotect.Runtime;
+using ILogger = Serilog.ILogger;
 
 namespace VMUnprotect.Core;
 
@@ -11,13 +12,13 @@ public interface IRuntimeService
 
 public class RuntimeService : IRuntimeService
 {
-    private readonly Context _context;
+    private readonly ILogger _logger;
     private readonly ModuleDef? _runtimeModule;
 
-    public RuntimeService(Context context)
+    public RuntimeService(ILogger logger)
     {
+        _logger = logger;
         _runtimeModule = ModuleDefMD.Load(typeof(Unprotect).Assembly.Location);
-        _context = context;
     }
 
     public bool GetRuntimeTypeDefinition(string? fullName, out TypeDef runtimeTypeDefinition,
@@ -30,6 +31,10 @@ public class RuntimeService : IRuntimeService
             throw new ArgumentNullException(nameof(fullName));
 
         runtimeTypeDefinition = _runtimeModule.Find(fullName, isReflectionName);
-        return runtimeTypeDefinition is not null;
+
+        bool found = runtimeTypeDefinition is not null;
+        _logger.Debug("Trying to find runtime type definition '{Type}': result {Found}", fullName, found);
+
+        return found;
     }
 }
