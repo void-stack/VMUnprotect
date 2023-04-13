@@ -1,62 +1,44 @@
-﻿using CommandLine;
-using System;
-using System.IO;
-using System.Linq;
-using VMUnprotect.Runtime.General;
-using VMUnprotect.Utils;
+﻿using System.CommandLine;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
+using VMUnprotect.Core;
 
-// https://open.spotify.com/playlist/4IeI5PQYePhXaezV9HRDIr
-// ^ Thanks for this banger soundtrack, without it the whole project wouldn't exist
+namespace VMUnprotect;
 
-namespace VMUnprotect
+internal static class Program
 {
-    internal static class Program
+    public static int Main(string[] args)
     {
-        private const string AsciiArt = @"
-       	 ____   ____  ____    ____  _____  _____  _______   
-       	|_  _| |_  _||_   \  /   _||_   _||_   _||_   __ \  
-       	 \ \   / /    |   \/   |    | |    | |    | |__) | 
-       	  \ \ / /     | |\  /| |    | '    ' |    |  ___/  
-       	   \ ' /     _| |_\/_| |_    \ \__/ /    _| |_     
-       	    \_/     |_____||_____|    `.__.'    |_____|
-             https://github.com/void-stack/VMUnprotect
-       	     VMUnprotect Ultimate v 3.6.0                     
-        ";
+        var fileArgument = new Argument<string>(
+            "file",
+            "The input module to obfuscate.");
 
-        public static void Main(string[] args) {
-            Console.Title = "VMUnprotect Ultimate";
-            ConsoleLogger.Banner(AsciiArt);
+        var verbosityOption = new Option<LogEventLevel>(
+            "--v",
+            () => LogEventLevel.Information,
+            "Set the verbosity level ");
 
-            if (args.Length > 0 && File.Exists(args[0]))
-                args[0] = $"-f {args[0]}";
+        var rootCommand = new RootCommand
+        {
+            fileArgument,
+            verbosityOption
+        };
 
-            Parser.Default.ParseArguments<CommandLineOptions>(args)
-                  .WithParsed(options => {
-                      var fileName = Path.GetFileNameWithoutExtension(options.FilePath);
-                      var fullPath = Path.GetFullPath(options.FilePath!);
+        rootCommand.SetHandler(ConstructOptions, fileArgument, verbosityOption);
+        return rootCommand.Invoke(args);
+    }
 
-                      var logger = new ConsoleLogger(fileName);
-                      logger.Info(
-                          "Doesn't work? Make sure you dump the file before with: https://github.com/void-stack/VMUnprotect.Dumper");
+    private static void ConstructOptions(string file, LogEventLevel verbosity)
+    {
+        Ascii.ShowInfo();
 
-                      var project = new Project {
-                          TargetFilePath = fullPath
-                      };
+        var logger = new LoggerConfiguration()
+            .MinimumLevel.Is(verbosity)
+            .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+            .CreateLogger();
 
-                      try {
-                          project.Run(logger, options);
-                      } catch (Exception ex) {
-                          // ignored
-                      }
-
-                      Console.ReadKey();
-                  })
-                  .WithNotParsed(errors => {
-                      Console.WriteLine("Errors: {0}", string.Join(", ", errors.Select(ex => ex.Tag)));
-                      Console.ReadKey();
-                  });
-
-            Environment.Exit(0);
-        }
+        logger.Debug("Constructing options...");
+        new Project(new Options(file, logger)).Run();
     }
 }
