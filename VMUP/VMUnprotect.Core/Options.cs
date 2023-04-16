@@ -14,6 +14,18 @@ public class Options
 
         TargetFile = targetFile;
         Logger = logger;
+
+        string targetDirectory = Path.GetDirectoryName(TargetFile)!;
+        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(TargetFile);
+        string directory = Path.Combine(targetDirectory, $"{fileNameWithoutExtension}-patched");
+
+        if (!Directory.Exists(directory))
+        {
+            Logger.Debug("Creating directory '{Directory}'", directory);
+            Directory.CreateDirectory(directory);
+        }
+
+        OutputFile = Path.Combine(directory, $"{fileNameWithoutExtension}{Path.GetExtension(TargetFile)}");
     }
 
     public ILogger Logger
@@ -22,6 +34,11 @@ public class Options
     }
 
     public string TargetFile
+    {
+        get;
+    }
+
+    public string OutputFile
     {
         get;
     }

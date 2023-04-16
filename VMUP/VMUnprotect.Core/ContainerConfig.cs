@@ -12,6 +12,7 @@ internal static class ContainerConfig
         Builder.RegisterInstance(context.Options.Logger).As<ILogger>().SingleInstance();
         Builder.RegisterInstance(context).As<Context>().SingleInstance();
 
+        Builder.RegisterType<AnalyzerService>().As<IAnalyzerService>().SingleInstance();
         Builder.RegisterType<RuntimeInjector>().As<IRuntimeInjector>().SingleInstance();
         Builder.RegisterType<RuntimeService>().As<IRuntimeService>().SingleInstance();
 
